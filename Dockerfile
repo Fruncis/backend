@@ -15,12 +15,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ── Application code ────────────────────────────────────────────────────
 COPY . .
 
-# Make the entrypoint script executable
-RUN chmod +x entrypoint.sh
-
 EXPOSE 8000
 
 # The entrypoint runs Alembic migrations then starts uvicorn.
-# Secrets (GEMINI_API_KEY, etc.) are injected at runtime via environment
-# variables — they are NEVER baked into the image.
-ENTRYPOINT ["./entrypoint.sh"]
+# Using a python script avoids CRLF line-ending issues when building on Windows
+# and allows it to run natively on both Windows (local) and Linux (Docker).
+# Secrets are injected at runtime via environment variables.
+ENTRYPOINT ["python", "entrypoint.py"]
